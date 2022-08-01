@@ -10,7 +10,7 @@ firebaseConfig = {
   "messagingSenderId": "591618864518",
   "appId": "1:591618864518:web:d961eb5e55ec8cf7bb2807",
   "measurementId": "G-KQGQTHRZYB",
-  "databaseURL": "https://fir-lab-ecc1d-default-rtdb.europe-west1.firebasedatabase.app/" }
+  "databaseURL": "https://fir-lab-ecc1d-default-rtdb.europe-west1.firebasedatabase.app" }
 
 firebase = pyrebase.initialize_app(firebaseConfig)
 auth = firebase.auth()
@@ -27,11 +27,11 @@ def signin():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-    try:
-        login_session['user'] = auth.sign_in_with_email_and_password(email, password)
-        return redirect(url_for('add_tweet'))
-    except:
-        error = "Authentication failed"
+        try:
+            login_session['user'] = auth.sign_in_with_email_and_password(email, password)
+            return redirect(url_for('add_tweet'))
+        except:
+          error = "Authentication failed"
     return render_template("signin.html")
 
 
@@ -41,13 +41,14 @@ def signup():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-    try:
         login_session['user'] = auth.create_user_with_email_and_password(email, password)
         user = {"email": request.form["email"], "password": request.form["password"]}
-        db.child("Users").child(login.session["user"]["localID"]).set(user)
-        return redirect(url_for('add_tweet'))
-    except:
-        error = "Authentication failed"
+        db.child("user").child(login.session["user"]["localID"]).set(user)
+        try:
+            return redirect(url_for('add_tweet'))
+        except:
+            error = "Authentication failed"
+        return render_template("signup.html", error=error)
     return render_template("signup.html")
 
 @app.route('/signout')
@@ -59,10 +60,10 @@ def signout():
 @app.route('/add_tweet', methods=['GET', 'POST'])
 def add_tweet():
     if request.method == "POST":
-        request.form["title"]
-        request.form["text"]
-    tweet = {"title": request.form["title"], "text": request.form["text"], "uid": login_session["user"]["localId"]}
-    db.child("Tweet").push(tweet)
+        title = request.form['title']
+        text = request.form['text']
+        tweet = {"title": request.form["title"], "text": request.form["text"], "uid": login_session["user"]["localId"]}
+        db.child("tweet").push(tweet)
     return render_template("add_tweet.html")
 
 @app.route('/all_tweets')
