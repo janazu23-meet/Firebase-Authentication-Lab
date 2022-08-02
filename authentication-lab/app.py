@@ -68,7 +68,7 @@ def add_tweet():
 
 @app.route('/all_tweets')
 def all_tweets():
-    alltweets = db.child("Tweet").get().val()
+    alltweets = db.child("tweet").get().val()
     return render_template("tweets.html", alltweets=alltweets)
 
 
